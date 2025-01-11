@@ -42,6 +42,13 @@ fs.mkdir(`place`, (err) => {
 fs.unlink(`place/where.txt`, (err) => {
     if(err){
         console.log(err);
+        fs.rmdir(`place`, (err) => {
+            if(err){
+                console.log(err);
+            } else {
+                console.log(`A place where u wanna be dose not exist anymore`);
+            }
+        });
     } else {
         fs.rmdir(`place`, (err) => {
             if(err){
@@ -57,29 +64,30 @@ fs.unlink(`place/where.txt`, (err) => {
 const http = require(`http`); //Calling the http module to work with servers
 
 let server = http.createServer((req, res) => {
-    res.writeHead(200, {'Content-Type': `text/html; charset=utf-8`}); //Setting the content type to text/plain
-    res.write(`<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Oh hi!</title>
-</head>
-<body>
-    <h1>Oh hi!</h1>
-</body>
-</html>`); //Displaying the text "Hello from Node.js!" on the server
-    res.end(); //Ending the server
-});
+    res.writeHead(200, {'Content-Type': `text/html; charset=utf-8`}); //Setting the content type to text/html
+    
+    if (req.url === `/`){
+        fs.createReadStream(`./templates/hello.html`).pipe(res);
+    }
+    else if (req.url === `/about`){
+        fs.createReadStream(`./templates/about.html`).pipe(res);
+    }
+    else {
+        fs.createReadStream(`./templates/404.html`).pipe(res);
+    }
+}); //Creating a server that displays the content of the hello.html, about.html and 404.html files
 
 const PORT = process.env.PORT || 3000; //Setting the port to 3000
 const HOST = `localhost`; //Setting the host to localhost
 
 server.listen(PORT, HOST, () => {
     console.log(`Server is running on http://${HOST}:${PORT}`); //Displaying the server is running
-}); //Creating a server that displays the text "Hello from Node.js!" on http://localhost:3000
+}); //Starting a server that displays something on http://localhost:3000
 
-
+const array ={ a: 1, b: 2, c: 3}; //Creating an object
+for (const value in array) {
+    console.log(value + ": " + array[value])
+} //Displaying the object
 
 
 
